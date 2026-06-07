@@ -3,7 +3,7 @@
 ## Short term
 
 - Generate SwiftUI code from `EDKDesignDocument`
-- Add Foundation Models-backed Auto Craft on iOS 26/macOS 26 while keeping the deterministic local engine as a fallback
+- Expand Foundation Models-backed Auto Craft prompts, presets, and generated component variety
 - Add text editing in the inspector
 - Add padding, alignment, and typography controls
 - Add more base components: input, badge, alert, segmented control, toolbar

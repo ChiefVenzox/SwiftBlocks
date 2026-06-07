@@ -71,9 +71,9 @@ import SwiftBlocks
 }
 ```
 
-The craft panel lets you enter a prompt, choose a block type, set a semantic color, tune corner radius, and press **Craft**. SwiftBlocks creates two local suggestions. Drag either result onto the canvas and place it wherever you want.
+The craft panel lets you enter a prompt, choose a block type, set a semantic color, tune corner radius, and press **Craft**. SwiftBlocks tries Apple's on-device Foundation Models engine first on supported iOS 26/macOS 26 devices. If the model is unavailable, it falls back to deterministic local templates and explains why in the panel.
 
-The current craft engine is fully local and deterministic so it works without network access or API keys. The API is shaped so an iOS 26/macOS 26 Foundation Models-backed generator can be added behind the same document model later.
+Both paths are local: no server call and no API key. Drag either result onto the canvas and place it wherever you want.
 
 ## Xcode Library
 

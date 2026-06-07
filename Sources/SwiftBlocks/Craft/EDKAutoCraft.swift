@@ -1,6 +1,9 @@
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
 public enum EDKCraftIntent: String, CaseIterable, Codable, Identifiable, Sendable {
     case button
@@ -245,3 +248,256 @@ public struct EDKLocalAutoCraftEngine: Sendable {
         return fallback
     }
 }
+
+public enum EDKAutoCraftRuntime: Equatable, Sendable {
+    case foundationModels
+    case localTemplates(String)
+
+    public var title: String {
+        switch self {
+        case .foundationModels:
+            "Foundation Models"
+        case .localTemplates:
+            "Local Templates"
+        }
+    }
+
+    public var message: String {
+        switch self {
+        case .foundationModels:
+            "Using Apple's on-device language model."
+        case .localTemplates(let reason):
+            reason
+        }
+    }
+}
+
+public struct EDKAutoCraftOutput: Sendable {
+    public var blocks: [EDKCraftedBlock]
+    public var runtime: EDKAutoCraftRuntime
+
+    public init(blocks: [EDKCraftedBlock], runtime: EDKAutoCraftRuntime) {
+        self.blocks = blocks
+        self.runtime = runtime
+    }
+}
+
+public struct EDKAutoCraftCoordinator: Sendable {
+    private let localEngine = EDKLocalAutoCraftEngine()
+
+    public init() {}
+
+    public func craft(_ request: EDKCraftRequest) async -> EDKAutoCraftOutput {
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            let foundationEngine = EDKFoundationAutoCraftEngine()
+            do {
+                let blocks = try await foundationEngine.craft(request)
+                return EDKAutoCraftOutput(blocks: blocks, runtime: .foundationModels)
+            } catch {
+                return EDKAutoCraftOutput(
+                    blocks: localEngine.craft(request),
+                    runtime: .localTemplates(foundationEngine.fallbackReason(after: error))
+                )
+            }
+        }
+        #endif
+
+        return EDKAutoCraftOutput(
+            blocks: localEngine.craft(request),
+            runtime: .localTemplates("Foundation Models requires iOS 26/macOS 26 and Apple Intelligence.")
+        )
+    }
+}
+
+#if canImport(FoundationModels)
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+public struct EDKFoundationAutoCraftEngine: Sendable {
+    private let model = SystemLanguageModel.default
+
+    public init() {}
+
+    public func fallbackReason(after error: Error? = nil) -> String {
+        if let error {
+            return "Foundation Models failed, using local templates. \(error.localizedDescription)"
+        }
+
+        switch model.availability {
+        case .available:
+            return "Foundation Models is available."
+        case .unavailable(.deviceNotEligible):
+            return "This device is not eligible for Apple Intelligence, using local templates."
+        case .unavailable(.appleIntelligenceNotEnabled):
+            return "Apple Intelligence is off, using local templates."
+        case .unavailable(.modelNotReady):
+            return "The on-device model is not ready yet, using local templates."
+        case .unavailable:
+            return "Foundation Models is unavailable, using local templates."
+        }
+    }
+
+    public func craft(_ request: EDKCraftRequest) async throws -> [EDKCraftedBlock] {
+        guard case .available = model.availability else {
+            throw EDKFoundationAutoCraftError.unavailable(fallbackReason())
+        }
+
+        let session = LanguageModelSession(
+            model: model,
+            instructions: """
+            You create editable SwiftUI layout blocks for SwiftBlocks.
+            Return exactly two practical suggestions.
+            Use only supported node kinds: button, text, card, hStack, vStack, spacer.
+            Use only supported variants: primary, secondary, success, danger, warning, info, light, dark, glass.
+            Use compact frames that fit inside a 390 by 844 iPhone canvas.
+            Prefer useful titles, headers, buttons, and cards that match the user's prompt.
+            """
+        )
+
+        let response = try await session.respond(
+            to: prompt(for: request),
+            generating: EDKGeneratedCraftPlan.self,
+            options: GenerationOptions(
+                sampling: .random(probabilityThreshold: 0.92),
+                temperature: 0.7,
+                maximumResponseTokens: 900
+            )
+        )
+
+        let blocks = response.content.blocks.map { $0.makeBlock(fallback: request) }
+        guard blocks.count == 2, blocks.allSatisfy({ !$0.nodes.isEmpty }) else {
+            throw EDKFoundationAutoCraftError.invalidOutput
+        }
+        return blocks
+    }
+
+    private func prompt(for request: EDKCraftRequest) -> String {
+        """
+        User prompt: \(request.prompt.isEmpty ? "Create a useful iOS UI block." : request.prompt)
+        Requested block type: \(request.intent.rawValue)
+        Preferred semantic color: \(request.variant.rawValue)
+        Preferred corner radius: \(Int(request.cornerRadius))
+        Generate two different SwiftBlocks suggestions.
+        """
+    }
+}
+
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+public enum EDKFoundationAutoCraftError: LocalizedError, Sendable {
+    case unavailable(String)
+    case invalidOutput
+
+    public var errorDescription: String? {
+        switch self {
+        case .unavailable(let reason):
+            reason
+        case .invalidOutput:
+            "The generated block plan was incomplete."
+        }
+    }
+}
+
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+@Generable
+struct EDKGeneratedCraftPlan {
+    @Guide(description: "Exactly two block suggestions.", .count(2))
+    var blocks: [EDKGeneratedCraftBlock]
+}
+
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+@Generable
+struct EDKGeneratedCraftBlock {
+    @Guide(description: "Short name for this block suggestion.")
+    var title: String
+
+    @Guide(description: "One short sentence explaining the block.")
+    var summary: String
+
+    @Guide(description: "Approximate block width.", .range(120.0...340.0))
+    var width: Double
+
+    @Guide(description: "Approximate block height.", .range(40.0...320.0))
+    var height: Double
+
+    @Guide(description: "Two to five editable nodes.", .count(2...5))
+    var nodes: [EDKGeneratedCraftNode]
+
+    func makeBlock(fallback request: EDKCraftRequest) -> EDKCraftedBlock {
+        EDKCraftedBlock(
+            title: title,
+            summary: summary,
+            width: width.clamped(to: 120...340),
+            height: height.clamped(to: 40...320),
+            nodes: nodes.map { $0.makeNode(fallback: request) }
+        )
+    }
+}
+
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+@Generable
+struct EDKGeneratedCraftNode {
+    @Guide(description: "Node kind.", .anyOf(["button", "text", "card", "hStack", "vStack", "spacer"]))
+    var kind: String
+
+    @Guide(description: "Text shown in the node.")
+    var title: String
+
+    @Guide(description: "Optional supporting text.")
+    var subtitle: String
+
+    @Guide(description: "X position relative to the block.", .range(0.0...340.0))
+    var x: Double
+
+    @Guide(description: "Y position relative to the block.", .range(0.0...320.0))
+    var y: Double
+
+    @Guide(description: "Node width.", .range(40.0...340.0))
+    var width: Double
+
+    @Guide(description: "Node height.", .range(32.0...220.0))
+    var height: Double
+
+    @Guide(description: "Semantic color variant.", .anyOf(["primary", "secondary", "success", "danger", "warning", "info", "light", "dark", "glass"]))
+    var variant: String
+
+    @Guide(description: "Component size.", .anyOf(["small", "medium", "large"]))
+    var size: String
+
+    @Guide(description: "Corner radius.", .range(0.0...28.0))
+    var cornerRadius: Double
+
+    func makeNode(fallback request: EDKCraftRequest) -> EDKDesignNode {
+        EDKDesignNode(
+            kind: EDKComponentKind(rawValue: kind) ?? request.intent.fallbackKind,
+            frame: EDKDesignFrame(
+                x: x.clamped(to: 0...340),
+                y: y.clamped(to: 0...320),
+                width: width.clamped(to: 40...340),
+                height: height.clamped(to: 32...220)
+            ),
+            content: EDKComponentContent(title: title, subtitle: subtitle),
+            style: EDKComponentStyle(
+                variant: EDKVariant(rawValue: variant) ?? request.variant,
+                size: EDKComponentSize(rawValue: size) ?? .medium,
+                cornerRadius: cornerRadius.clamped(to: 0...28)
+            )
+        )
+    }
+}
+
+private extension EDKCraftIntent {
+    var fallbackKind: EDKComponentKind {
+        switch self {
+        case .button: .button
+        case .header: .text
+        case .card: .card
+        case .landing: .card
+        }
+    }
+}
+
+private extension Double {
+    func clamped(to range: ClosedRange<Double>) -> Double {
+        min(max(self, range.lowerBound), range.upperBound)
+    }
+}
+#endif

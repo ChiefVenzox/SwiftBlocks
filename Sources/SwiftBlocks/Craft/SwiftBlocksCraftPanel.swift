@@ -5,14 +5,19 @@ public struct SwiftBlocksCraftPanel: View {
 
     @State private var request: EDKCraftRequest
     @State private var craftedBlocks: [EDKCraftedBlock]
+    @State private var runtime: EDKAutoCraftRuntime = .localTemplates("Ready. Press Craft to try Foundation Models, then fall back to local templates if needed.")
+    @State private var isCrafting = false
 
-    private let engine: EDKLocalAutoCraftEngine
+    private let localEngine: EDKLocalAutoCraftEngine
+    private let coordinator: EDKAutoCraftCoordinator
 
     public init(
         initialRequest: EDKCraftRequest = EDKCraftRequest(),
-        engine: EDKLocalAutoCraftEngine = EDKLocalAutoCraftEngine()
+        engine: EDKLocalAutoCraftEngine = EDKLocalAutoCraftEngine(),
+        coordinator: EDKAutoCraftCoordinator = EDKAutoCraftCoordinator()
     ) {
-        self.engine = engine
+        self.localEngine = engine
+        self.coordinator = coordinator
         self._request = State(initialValue: initialRequest)
         self._craftedBlocks = State(initialValue: engine.craft(initialRequest))
     }
@@ -25,6 +30,7 @@ public struct SwiftBlocksCraftPanel: View {
             variantPicker
             radiusControl
             craftButton
+            runtimeBanner
             craftedResults
             Spacer(minLength: 0)
         }
@@ -106,14 +112,36 @@ public struct SwiftBlocksCraftPanel: View {
 
     private var craftButton: some View {
         Button {
-            withAnimation(.snappy(duration: 0.22)) {
-                craftedBlocks = engine.craft(request)
-            }
+            craft()
         } label: {
-            Label("Craft", systemImage: "wand.and.sparkles")
+            Label(isCrafting ? "Crafting" : "Craft", systemImage: isCrafting ? "hourglass" : "wand.and.sparkles")
                 .frame(maxWidth: .infinity)
         }
+        .disabled(isCrafting)
         .buttonStyle(EDKButtonStyle(style: EDKComponentStyle(variant: request.variant, size: .medium, cornerRadius: request.cornerRadius)))
+    }
+
+    private var runtimeBanner: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(runtime.title)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                Text(runtime.message)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+            }
+        } icon: {
+            Image(systemName: runtime == .foundationModels ? "brain.head.profile" : "square.stack.3d.up")
+                .foregroundStyle(runtime == .foundationModels ? theme.colors.success : theme.colors.secondary)
+        }
+        .padding(theme.spacing.xs)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.white.opacity(0.62), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(theme.colors.stroke, lineWidth: 1)
+        }
     }
 
     private var craftedResults: some View {
@@ -131,6 +159,22 @@ public struct SwiftBlocksCraftPanel: View {
 
     private func swatchColor(for variant: EDKVariant) -> Color {
         variant == .glass ? theme.colors.light : variant.background(in: theme)
+    }
+
+    private func craft() {
+        guard !isCrafting else { return }
+        isCrafting = true
+
+        Task {
+            let output = await coordinator.craft(request)
+            await MainActor.run {
+                withAnimation(.snappy(duration: 0.22)) {
+                    craftedBlocks = output.blocks.isEmpty ? localEngine.craft(request) : output.blocks
+                    runtime = output.runtime
+                    isCrafting = false
+                }
+            }
+        }
     }
 }
 
