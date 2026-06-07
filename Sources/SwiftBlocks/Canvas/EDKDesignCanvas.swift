@@ -15,6 +15,17 @@ public struct EDKDesignCanvas: View {
     }
 
     public var body: some View {
+        GeometryReader { proxy in
+            if proxy.size.width < 640 {
+                compactBody
+            } else {
+                regularBody
+            }
+        }
+        .background(theme.colors.canvas)
+    }
+
+    private var regularBody: some View {
         ViewThatFits {
             HStack(spacing: 0) {
                 EDKComponentPalette(items: palette)
@@ -30,7 +41,15 @@ public struct EDKDesignCanvas: View {
                 editorBody
             }
         }
-        .background(theme.colors.canvas)
+    }
+
+    private var compactBody: some View {
+        VStack(spacing: 0) {
+            EDKCompactComponentPalette(items: palette)
+                .frame(height: 72)
+            Divider()
+            canvasBody
+        }
     }
 
     private var editorBody: some View {
@@ -103,6 +122,46 @@ public struct EDKDesignCanvas: View {
             x: (location.x - canvasOrigin.x) / scale,
             y: (location.y - canvasOrigin.y) / scale
         )
+    }
+}
+
+public struct EDKCompactComponentPalette: View {
+    @Environment(\.edkTheme) private var theme
+
+    private let items: [EDKPaletteItem]
+
+    public init(items: [EDKPaletteItem] = EDKPaletteItem.basic) {
+        self.items = items
+    }
+
+    public var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: theme.spacing.xs) {
+                ForEach(items) { item in
+                    VStack(spacing: 5) {
+                        Image(systemName: item.kind.symbolName)
+                            .font(.system(size: 15, weight: .semibold))
+                        Text(item.kind.paletteTitle)
+                            .font(.system(size: 10, weight: .semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.72)
+                    }
+                    .foregroundStyle(item.variant.foreground(in: theme))
+                    .frame(width: 72, height: 52)
+                    .edkSurfaceBackground(
+                        variant: item.variant,
+                        cornerRadius: theme.radii.sm,
+                        isInteractive: true,
+                        theme: theme
+                    )
+                    .draggable(item)
+                    .accessibilityLabel("Add \(item.kind.paletteTitle)")
+                }
+            }
+            .padding(.horizontal, theme.spacing.sm)
+            .padding(.vertical, theme.spacing.xs)
+        }
+        .background(.regularMaterial)
     }
 }
 

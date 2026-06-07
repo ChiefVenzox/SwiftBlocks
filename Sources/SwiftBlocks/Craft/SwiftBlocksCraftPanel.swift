@@ -176,25 +176,66 @@ private struct EDKCraftedBlockCard: View {
 
 public struct SwiftBlocksStudio: View {
     @State private var store: EDKDesignCanvasStore
+    @State private var compactSelection = SwiftBlocksStudioPanel.craft
 
     public init(store: EDKDesignCanvasStore = EDKDesignCanvasStore.sample()) {
         self._store = State(initialValue: store)
     }
 
     public var body: some View {
-        ViewThatFits {
-            HStack(spacing: 0) {
-                SwiftBlocksCraftPanel()
-                Divider()
-                EDKDesignCanvas(store: store)
+        GeometryReader { proxy in
+            if proxy.size.width < 760 {
+                compactBody
+            } else {
+                regularBody
             }
+        }
+    }
 
-            VStack(spacing: 0) {
-                SwiftBlocksCraftPanel()
-                    .frame(maxHeight: 360)
-                Divider()
+    private var regularBody: some View {
+        HStack(spacing: 0) {
+            SwiftBlocksCraftPanel()
+            Divider()
+            EDKDesignCanvas(store: store)
+        }
+    }
+
+    private var compactBody: some View {
+        VStack(spacing: 0) {
+            Picker("SwiftBlocks", selection: $compactSelection) {
+                ForEach(SwiftBlocksStudioPanel.allCases) { panel in
+                    Text(panel.title).tag(panel)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(.regularMaterial)
+
+            Divider()
+
+            switch compactSelection {
+            case .craft:
+                ScrollView {
+                    SwiftBlocksCraftPanel()
+                }
+            case .canvas:
                 EDKDesignCanvas(store: store)
             }
+        }
+    }
+}
+
+private enum SwiftBlocksStudioPanel: String, CaseIterable, Identifiable {
+    case craft
+    case canvas
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .craft: "Craft"
+        case .canvas: "Canvas"
         }
     }
 }
@@ -204,7 +245,6 @@ public struct SwiftBlocksCraftWindow: View {
 
     public var body: some View {
         SwiftBlocksStudio()
-            .frame(minWidth: 980, minHeight: 680)
     }
 }
 
