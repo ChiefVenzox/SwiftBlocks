@@ -35,6 +35,20 @@ The canvas includes a palette, an iPhone-sized design surface, and an inspector.
 
 Use the craft panel to choose a block type, color, and radius. Press **Craft** to create two local suggestions, then drag either suggestion onto the canvas.
 
+## Use the Xcode Library
+
+After adding SwiftBlocks as a package dependency, open Xcode's Library with the `+` button and search for `SwiftBlocks`.
+
+Available library items:
+
+- SwiftBlocks Button
+- SwiftBlocks Glass Card
+- SwiftBlocks Canvas
+- SwiftBlocks Auto Craft
+- SwiftBlocks Studio
+
+Drag an item into code or the SwiftUI preview canvas.
+
 ## Use components directly
 
 ```swift

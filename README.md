@@ -75,6 +75,19 @@ The craft panel lets you enter a prompt, choose a block type, set a semantic col
 
 The current craft engine is fully local and deterministic so it works without network access or API keys. The API is shaped so an iOS 26/macOS 26 Foundation Models-backed generator can be added behind the same document model later.
 
+## Xcode Library
+
+SwiftBlocks publishes common blocks to Xcode's Library panel.
+
+After adding the package:
+
+1. Open a SwiftUI file.
+2. Open the Xcode Library with the `+` button.
+3. Search for `SwiftBlocks`.
+4. Drag `SwiftBlocks Button`, `SwiftBlocks Glass Card`, `SwiftBlocks Canvas`, `SwiftBlocks Auto Craft`, or `SwiftBlocks Studio` into your code or preview canvas.
+
+This is the closest native Xcode experience available from a Swift package. A package can add items to the Xcode Library, but it cannot install a permanent custom sidebar inside Xcode.
+
 ## Wiki
 
 The project wiki content lives in [`docs/wiki`](docs/wiki) so it can be versioned with the package:
