@@ -75,15 +75,14 @@ public struct EDKDesignCanvas: View {
                 .scaleEffect(scale, anchor: .center)
                 .dropDestination(for: EDKPaletteItem.self) { items, location in
                     guard let item = items.first else { return false }
-                    let canvasOrigin = CGPoint(
-                        x: (proxy.size.width - store.document.canvasWidth * scale) / 2,
-                        y: (proxy.size.height - store.document.canvasHeight * scale) / 2
-                    )
-                    let canvasPoint = CGPoint(
-                        x: (location.x - canvasOrigin.x) / scale,
-                        y: (location.y - canvasOrigin.y) / scale
-                    )
+                    let canvasPoint = canvasPoint(from: location, in: proxy.size, scale: scale)
                     store.add(item, at: canvasPoint)
+                    return true
+                }
+                .dropDestination(for: EDKCraftedBlock.self) { blocks, location in
+                    guard let block = blocks.first else { return false }
+                    let canvasPoint = canvasPoint(from: location, in: proxy.size, scale: scale)
+                    store.add(block, at: canvasPoint)
                     return true
                 }
             }
@@ -93,6 +92,17 @@ public struct EDKDesignCanvas: View {
                 store.select(nil)
             }
         }
+    }
+
+    private func canvasPoint(from location: CGPoint, in containerSize: CGSize, scale: Double) -> CGPoint {
+        let canvasOrigin = CGPoint(
+            x: (containerSize.width - store.document.canvasWidth * scale) / 2,
+            y: (containerSize.height - store.document.canvasHeight * scale) / 2
+        )
+        return CGPoint(
+            x: (location.x - canvasOrigin.x) / scale,
+            y: (location.y - canvasOrigin.y) / scale
+        )
     }
 }
 

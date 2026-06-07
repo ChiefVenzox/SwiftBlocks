@@ -20,6 +20,13 @@ public final class EDKDesignCanvasStore {
         return nodeID
     }
 
+    @discardableResult
+    public func add(_ block: EDKCraftedBlock, at point: CGPoint? = nil) -> [EDKDesignNode.ID] {
+        let nodeIDs = document.addBlock(block, at: point)
+        selectedNodeID = nodeIDs.last
+        return nodeIDs
+    }
+
     public func updateFrame(id: EDKDesignNode.ID, frame: EDKDesignFrame) {
         document.updateFrame(id: id, frame: frame)
     }

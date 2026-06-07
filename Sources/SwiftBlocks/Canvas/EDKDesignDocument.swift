@@ -119,6 +119,7 @@ public struct EDKDesignDocument: Codable, Equatable, Sendable {
     @discardableResult
     public mutating func addNode(_ node: EDKDesignNode, at point: CGPoint? = nil) -> EDKDesignNode.ID {
         var nextNode = node
+        nextNode.id = UUID()
         if let point {
             nextNode.frame.x = Double(point.x) - nextNode.frame.width / 2
             nextNode.frame.y = Double(point.y) - nextNode.frame.height / 2
@@ -126,6 +127,32 @@ public struct EDKDesignDocument: Codable, Equatable, Sendable {
         nextNode.frame = nextNode.frame.clamped(to: canvasSize)
         nodes.append(nextNode)
         return nextNode.id
+    }
+
+    @discardableResult
+    public mutating func addBlock(_ block: EDKCraftedBlock, at point: CGPoint? = nil) -> [EDKDesignNode.ID] {
+        let originX: Double
+        let originY: Double
+
+        if let point {
+            originX = Double(point.x) - block.width / 2
+            originY = Double(point.y) - block.height / 2
+        } else {
+            originX = 40
+            originY = 40
+        }
+
+        let insertedNodes = block.nodes.map { sourceNode in
+            var node = sourceNode
+            node.id = UUID()
+            node.frame.x += originX
+            node.frame.y += originY
+            node.frame = node.frame.clamped(to: canvasSize)
+            return node
+        }
+
+        nodes.append(contentsOf: insertedNodes)
+        return insertedNodes.map(\.id)
     }
 
     public mutating func updateFrame(id: EDKDesignNode.ID, frame: EDKDesignFrame) {

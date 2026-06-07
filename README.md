@@ -58,6 +58,23 @@ EDKSurface(style: EDKComponentStyle(variant: .glass, cornerRadius: 14)) {
 5. Resize it with the bottom-right handle.
 6. Change size and semantic variant from the inspector.
 
+## Auto Craft
+
+Open the local craft studio in a SwiftUI preview:
+
+```swift
+import SwiftUI
+import SwiftBlocks
+
+#Preview {
+    SwiftBlocksCraftWindow()
+}
+```
+
+The craft panel lets you enter a prompt, choose a block type, set a semantic color, tune corner radius, and press **Craft**. SwiftBlocks creates two local suggestions. Drag either result onto the canvas and place it wherever you want.
+
+The current craft engine is fully local and deterministic so it works without network access or API keys. The API is shaped so an iOS 26/macOS 26 Foundation Models-backed generator can be added behind the same document model later.
+
 ## Wiki
 
 The project wiki content lives in [`docs/wiki`](docs/wiki) so it can be versioned with the package:

@@ -40,3 +40,28 @@ import Testing
     #expect(node.style.variant == .success)
     #expect(node.style.size == .large)
 }
+
+@Test func localAutoCraftCreatesTwoSuggestions() {
+    let engine = EDKLocalAutoCraftEngine()
+    let request = EDKCraftRequest(prompt: "login header", intent: .header, variant: .success, cornerRadius: 18)
+
+    let blocks = engine.craft(request)
+
+    #expect(blocks.count == 2)
+    #expect(blocks.allSatisfy { !$0.nodes.isEmpty })
+    #expect(blocks.flatMap(\.nodes).contains { $0.style.cornerRadius == 18 })
+}
+
+@Test func documentAddsCraftedBlockWithFreshIDs() throws {
+    let engine = EDKLocalAutoCraftEngine()
+    let block = try #require(engine.craft(EDKCraftRequest(intent: .button)).first)
+    var document = EDKDesignDocument(canvasWidth: 390, canvasHeight: 844)
+
+    let firstIDs = document.addBlock(block, at: CGPoint(x: 100, y: 100))
+    let secondIDs = document.addBlock(block, at: CGPoint(x: 100, y: 180))
+
+    #expect(firstIDs.count == block.nodes.count)
+    #expect(secondIDs.count == block.nodes.count)
+    #expect(Set(firstIDs).isDisjoint(with: Set(secondIDs)))
+    #expect(document.nodes.count == block.nodes.count * 2)
+}
