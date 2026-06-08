@@ -1,11 +1,12 @@
 # SwiftBlocks Wiki
 
-SwiftBlocks is a SwiftUI package for building app interfaces from reusable blocks. It provides a design-token layer, basic components, and a live canvas where components can be dragged, moved, resized, and styled.
+SwiftBlocks is a SwiftUI package for building app interfaces from reusable blocks. It provides a design-token layer, basic components, local Craft generation, and a tabbed workspace where components can be generated, dragged, moved, resized, and styled.
 
 ## Core ideas
 
 - SwiftUI-first API
 - package-friendly installation through Xcode
+- workspace-first builder entry point
 - Bootstrap-inspired semantic variants
 - iOS 26 Liquid Glass support with fallbacks
 - Codable design documents for future code generation

@@ -23,7 +23,7 @@ import SwiftBlocks
 
 struct BuilderPreview: View {
     var body: some View {
-        EDKDesignCanvas()
+        SwiftBlocksWorkspaceView()
     }
 }
 
@@ -52,12 +52,13 @@ EDKSurface(style: EDKComponentStyle(variant: .glass, cornerRadius: 14)) {
 
 ## Canvas workflow
 
-1. Open a SwiftUI preview with `EDKDesignCanvas()`.
-2. Drag components from the palette onto the canvas.
-3. Tap a block to select it.
-4. Move it by dragging the block.
-5. Resize it with the bottom-right handle.
-6. Change size and semantic variant from the inspector.
+1. Open a SwiftUI preview with `SwiftBlocksWorkspaceView()`.
+2. Use the **Craft** tab to generate local SwiftUI components.
+3. Press **Add to Canvas** or switch to **Blocks** and drag components onto the canvas.
+4. Tap a block to select it.
+5. Move it by dragging the block.
+6. Resize it with the bottom-right handle.
+7. Change size and semantic variant from the inspector.
 
 ## Workspace Tabs
 
@@ -85,7 +86,7 @@ import SwiftUI
 import SwiftBlocks
 
 #Preview {
-    SwiftBlocksWorkspaceView(selectedTab: .craft)
+    SwiftBlocksWorkspaceView()
 }
 ```
 
@@ -113,7 +114,7 @@ After adding the package:
 1. Open a SwiftUI file.
 2. Open the Xcode Library with the `+` button.
 3. Search for `SwiftBlocks`.
-4. Drag `SwiftBlocks Button`, `SwiftBlocks Glass Card`, `SwiftBlocks Canvas`, `SwiftBlocks Auto Craft`, or `SwiftBlocks Workspace` into your code or preview canvas.
+4. Drag `SwiftBlocks Workspace` into your code or preview canvas for the full builder. You can also use `SwiftBlocks Button`, `SwiftBlocks Glass Card`, `SwiftBlocks Canvas`, or `SwiftBlocks Auto Craft` for focused examples.
 
 This is the closest native Xcode experience available from a Swift package. A package can add items to the Xcode Library, but it cannot install a permanent custom sidebar inside Xcode.
 

@@ -7,3 +7,4 @@
 - Added deterministic local SwiftUI code generation
 - Added generated component preview and code output panel
 - Added Add to Canvas / Copy SwiftUI Code actions as early workspace actions
+- Made `SwiftBlocksWorkspaceView` the primary package entry point

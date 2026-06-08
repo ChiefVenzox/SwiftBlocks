@@ -7,6 +7,13 @@ struct SwiftBlocksLibraryContent: LibraryContentProvider {
         [
             LibraryItem(
                 MainActor.assumeIsolated {
+                    SwiftBlocksWorkspaceView()
+                },
+                title: "SwiftBlocks Workspace",
+                category: .other
+            ),
+            LibraryItem(
+                MainActor.assumeIsolated {
                     EDKButton("Continue", style: EDKComponentStyle(variant: .primary, size: .medium, cornerRadius: 8)) {}
                 },
                 title: "SwiftBlocks Button",
@@ -38,13 +45,6 @@ struct SwiftBlocksLibraryContent: LibraryContentProvider {
                     SwiftBlocksCraftWindow()
                 },
                 title: "SwiftBlocks Auto Craft",
-                category: .other
-            ),
-            LibraryItem(
-                MainActor.assumeIsolated {
-                    SwiftBlocksWorkspaceView(selectedTab: .craft)
-                },
-                title: "SwiftBlocks Workspace",
                 category: .other
             ),
         ]

@@ -18,7 +18,7 @@ public struct SwiftBlocksWorkspaceView: View {
     @State private var store: EDKDesignCanvasStore
 
     public init(
-        selectedTab: SwiftBlocksWorkspaceTab = .blocks,
+        selectedTab: SwiftBlocksWorkspaceTab = .craft,
         store: EDKDesignCanvasStore = EDKDesignCanvasStore.sample()
     ) {
         self._selectedTab = State(initialValue: selectedTab)

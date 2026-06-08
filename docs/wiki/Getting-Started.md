@@ -15,7 +15,17 @@ import SwiftUI
 import SwiftBlocks
 ```
 
-## Open the live canvas
+## Open the Workspace
+
+```swift
+#Preview {
+    SwiftBlocksWorkspaceView()
+}
+```
+
+The workspace includes Blocks, Canvas, Inspector, Tokens, Templates, Craft, and Export tabs. It opens on Craft by default, so you can generate native SwiftUI component code from prompts, component types, and styles, then press **Add to Canvas**.
+
+## Open the live canvas directly
 
 ```swift
 #Preview {
@@ -37,29 +47,19 @@ Use the craft panel to choose a block type, color, and radius. Press **Craft** t
 
 Craft is fully local and deterministic. It uses Swift presets and templates only, so there is no API key, no server, and no internet requirement.
 
-## Open the Workspace
-
-```swift
-#Preview {
-    SwiftBlocksWorkspaceView(selectedTab: .craft)
-}
-```
-
-The workspace includes Blocks, Canvas, Inspector, Tokens, Templates, Craft, and Export tabs. The Craft tab generates native SwiftUI component code from prompts, component types, and styles.
-
 ## Use the Xcode Library
 
 After adding SwiftBlocks as a package dependency, open Xcode's Library with the `+` button and search for `SwiftBlocks`.
 
 Available library items:
 
+- SwiftBlocks Workspace
 - SwiftBlocks Button
 - SwiftBlocks Glass Card
 - SwiftBlocks Canvas
 - SwiftBlocks Auto Craft
-- SwiftBlocks Workspace
 
-Drag an item into code or the SwiftUI preview canvas.
+Drag `SwiftBlocks Workspace` into code or the SwiftUI preview canvas for the full builder. Use the other items for focused component examples.
 
 ## Use components directly
 
