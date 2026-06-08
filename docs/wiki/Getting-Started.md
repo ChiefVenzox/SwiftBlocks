@@ -35,7 +35,17 @@ The canvas includes a palette, an iPhone-sized design surface, and an inspector.
 
 Use the craft panel to choose a block type, color, and radius. Press **Craft** to create two suggestions, then drag either suggestion onto the canvas.
 
-On iOS 26/macOS 26 with Apple Intelligence available, SwiftBlocks uses Apple's on-device Foundation Models framework. If the model is unavailable, the panel shows the reason and uses deterministic local templates instead.
+Craft is fully local and deterministic. It uses Swift presets and templates only, so there is no API key, no server, and no internet requirement.
+
+## Open the Workspace
+
+```swift
+#Preview {
+    SwiftBlocksWorkspaceView(selectedTab: .craft)
+}
+```
+
+The workspace includes Blocks, Canvas, Inspector, Tokens, Templates, Craft, and Export tabs. The Craft tab generates native SwiftUI component code from prompts, component types, and styles.
 
 ## Use the Xcode Library
 
@@ -47,7 +57,7 @@ Available library items:
 - SwiftBlocks Glass Card
 - SwiftBlocks Canvas
 - SwiftBlocks Auto Craft
-- SwiftBlocks Studio
+- SwiftBlocks Workspace
 
 Drag an item into code or the SwiftUI preview canvas.
 

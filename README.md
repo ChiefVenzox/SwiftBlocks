@@ -10,6 +10,7 @@ The goal is simple: add the package in Xcode, open a SwiftUI preview, drag block
 - `EDKButton` and `EDKSurface`: reusable SwiftUI components.
 - `EDKDesignCanvas`: a live editor for dragging, selecting, moving, and resizing components.
 - `EDKDesignDocument`: a Codable model for saving generated layout state.
+- `SwiftBlocksWorkspaceView`: a native SwiftUI workspace with Blocks, Canvas, Inspector, Tokens, Templates, Craft, and Export tabs.
 - iOS 26 Liquid Glass support with sensible material fallbacks for earlier OS versions.
 
 ## Package usage
@@ -58,7 +59,37 @@ EDKSurface(style: EDKComponentStyle(variant: .glass, cornerRadius: 14)) {
 5. Resize it with the bottom-right handle.
 6. Change size and semantic variant from the inspector.
 
-## Auto Craft
+## Workspace Tabs
+
+- **Blocks** - Browse draggable SwiftBlocks components.
+- **Canvas** - Place, move, select, and resize blocks.
+- **Inspector** - Inspect selected block sizing, style, and content.
+- **Tokens** - Review semantic color and design tokens.
+- **Templates** - Start from local layout presets.
+- **Craft** - Locally generate SwiftUI components from prompts, presets, and styles without external AI APIs.
+- **Export** - Prepare native SwiftUI output from workspace documents.
+
+## Local Component Crafting
+
+SwiftBlocks includes a local Craft workspace for generating SwiftUI component structures from prompts, presets, component types, and styles. Craft is designed to feel AI-assisted while staying fully local, deterministic, and dependency-free.
+
+- No API key required.
+- No server required.
+- No internet required.
+- Generated output is native SwiftUI.
+
+Open the full workspace in a SwiftUI preview:
+
+```swift
+import SwiftUI
+import SwiftBlocks
+
+#Preview {
+    SwiftBlocksWorkspaceView(selectedTab: .craft)
+}
+```
+
+Or open the compact craft/canvas experience:
 
 Open the local craft studio in a SwiftUI preview:
 
@@ -71,9 +102,7 @@ import SwiftBlocks
 }
 ```
 
-The craft panel lets you enter a prompt, choose a block type, set a semantic color, tune corner radius, and press **Craft**. SwiftBlocks tries Apple's on-device Foundation Models engine first on supported iOS 26/macOS 26 devices. If the model is unavailable, it falls back to deterministic local templates and explains why in the panel.
-
-Both paths are local: no server call and no API key. Drag either result onto the canvas and place it wherever you want.
+The craft panels let you enter a prompt, choose a component or block type, select a style, preview the generated result, and copy deterministic SwiftUI code. Everything is generated locally from Swift code templates.
 
 ## Xcode Library
 
@@ -84,7 +113,7 @@ After adding the package:
 1. Open a SwiftUI file.
 2. Open the Xcode Library with the `+` button.
 3. Search for `SwiftBlocks`.
-4. Drag `SwiftBlocks Button`, `SwiftBlocks Glass Card`, `SwiftBlocks Canvas`, `SwiftBlocks Auto Craft`, or `SwiftBlocks Studio` into your code or preview canvas.
+4. Drag `SwiftBlocks Button`, `SwiftBlocks Glass Card`, `SwiftBlocks Canvas`, `SwiftBlocks Auto Craft`, or `SwiftBlocks Workspace` into your code or preview canvas.
 
 This is the closest native Xcode experience available from a Swift package. A package can add items to the Xcode Library, but it cannot install a permanent custom sidebar inside Xcode.
 

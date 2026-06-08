@@ -42,9 +42,9 @@ struct SwiftBlocksLibraryContent: LibraryContentProvider {
             ),
             LibraryItem(
                 MainActor.assumeIsolated {
-                    SwiftBlocksStudio()
+                    SwiftBlocksWorkspaceView(selectedTab: .craft)
                 },
-                title: "SwiftBlocks Studio",
+                title: "SwiftBlocks Workspace",
                 category: .other
             ),
         ]

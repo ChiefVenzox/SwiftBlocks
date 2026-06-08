@@ -3,7 +3,7 @@
 ## Short term
 
 - Generate SwiftUI code from `EDKDesignDocument`
-- Expand Foundation Models-backed Auto Craft prompts, presets, and generated component variety
+- Expand local Craft presets, styles, and generated component variety
 - Add text editing in the inspector
 - Add padding, alignment, and typography controls
 - Add more base components: input, badge, alert, segmented control, toolbar

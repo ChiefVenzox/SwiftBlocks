@@ -65,3 +65,53 @@ import Testing
     #expect(Set(firstIDs).isDisjoint(with: Set(secondIDs)))
     #expect(document.nodes.count == block.nodes.count * 2)
 }
+
+@Test func workspaceTabsIncludeCraftInExpectedOrder() {
+    #expect(SwiftBlocksWorkspaceTab.allCases.map(\.rawValue) == [
+        "Blocks",
+        "Canvas",
+        "Inspector",
+        "Tokens",
+        "Templates",
+        "Craft",
+        "Export",
+    ])
+}
+
+@Test func craftGeneratorCreatesDeterministicSwiftUICodeForCoreComponents() {
+    let componentTypes: [SwiftBlocksCraftComponentType] = [
+        .button,
+        .card,
+        .formRow,
+        .heroSection,
+        .settingsCell,
+    ]
+
+    for componentType in componentTypes {
+        let request = SwiftBlocksCraftRequest(
+            prompt: "glass login button",
+            componentType: componentType,
+            style: .glass
+        )
+
+        let result = SwiftBlocksCraftGenerator.generate(from: request)
+
+        #expect(result.title == "glass login button")
+        #expect(result.swiftUICode.contains("SwiftBlocks") || result.swiftUICode.contains("Button") || result.swiftUICode.contains("HStack") || result.swiftUICode.contains("VStack"))
+        #expect(result.swiftUICode.contains(".background(.ultraThinMaterial"))
+    }
+}
+
+@Test func craftGeneratorFallsBackToGenericCustomBlock() {
+    let request = SwiftBlocksCraftRequest(
+        prompt: "",
+        componentType: .emptyState,
+        style: .outline
+    )
+
+    let result = SwiftBlocksCraftGenerator.generate(from: request)
+
+    #expect(result.title == "Empty State")
+    #expect(result.description.contains("generic local component"))
+    #expect(result.swiftUICode.contains("Customize this generated SwiftUI block."))
+}

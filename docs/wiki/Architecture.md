@@ -21,10 +21,22 @@ SwiftBlocks is split into three layers.
 
 The document model is intentionally separate from SwiftUI views so future code generation, import/export, and persistence can evolve without rewriting the UI.
 
-## Auto Craft
+## Workspace
 
-Auto Craft is coordinated by `EDKAutoCraftCoordinator`.
+`SwiftBlocksWorkspaceView` is the tabbed builder surface for package users. It exposes the complete workspace flow:
 
-- On supported iOS 26/macOS 26 devices, it uses Foundation Models to generate a structured block plan.
-- If Foundation Models is unavailable, disabled, or not ready, it falls back to `EDKLocalAutoCraftEngine`.
-- Both engines return `EDKCraftedBlock`, so the canvas receives the same safe document model either way.
+- Blocks
+- Canvas
+- Inspector
+- Tokens
+- Templates
+- Craft
+- Export
+
+## Craft
+
+Craft is local component generation for SwiftUI structures. It uses `SwiftBlocksCraftRequest`, `SwiftBlocksCraftComponentType`, `SwiftBlocksCraftStyle`, and `SwiftBlocksCraftGenerator` to produce deterministic `SwiftBlocksCraftResult` values.
+
+The first generator implementation is template-driven. It produces previewable SwiftUI code for common components such as buttons, cards, form rows, hero sections, and settings cells. No API key, server, internet access, or external AI service is required.
+
+Legacy compact craft surfaces still return `EDKCraftedBlock`, so generated blocks can be added to the same canvas document model safely.
