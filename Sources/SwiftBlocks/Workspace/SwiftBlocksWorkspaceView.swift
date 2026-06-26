@@ -39,7 +39,9 @@ public struct SwiftBlocksWorkspaceView: View {
             HStack(spacing: 8) {
                 ForEach(SwiftBlocksWorkspaceTab.allCases) { tab in
                     Button {
-                        selectedTab = tab
+                        withAnimation(.snappy(duration: 0.2)) {
+                            selectedTab = tab
+                        }
                     } label: {
                         Text(tab.rawValue)
                             .font(.system(size: 13, weight: .semibold))
@@ -132,11 +134,13 @@ private struct SwiftBlocksTokenPreview: View {
             RoundedRectangle(cornerRadius: 6)
                 .fill(color)
                 .frame(width: 34, height: 34)
+                .shadow(color: color.opacity(0.3), radius: 3, y: 1)
             Text(title)
                 .font(.subheadline.weight(.semibold))
         }
         .padding(10)
         .background(.background, in: RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.04), radius: 4, y: 2)
     }
 }
 

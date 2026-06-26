@@ -392,9 +392,16 @@ private struct EDKCanvasInspector: View {
                 .buttonStyle(.bordered)
                 .padding(.top, 8)
             } else {
-                Text("Select a component")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.secondary)
+                VStack(spacing: 8) {
+                    Image(systemName: "hand.tap")
+                        .font(.system(size: 24))
+                        .foregroundStyle(theme.colors.stroke)
+                    Text("Select a component")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 24)
             }
 
             Spacer(minLength: 0)
