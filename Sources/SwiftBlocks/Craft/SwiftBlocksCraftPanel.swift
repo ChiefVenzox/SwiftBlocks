@@ -85,6 +85,7 @@ public struct SwiftBlocksCraftPanel: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(variant.rawValue.capitalized)
+                    .accessibilityAddTraits(request.variant == variant ? .isSelected : [])
                 }
             }
         }

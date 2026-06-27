@@ -233,6 +233,7 @@ private struct EDKCanvasNodeView: View {
             .contentShape(Rectangle())
             .onTapGesture(perform: onSelect)
             .gesture(moveGesture)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder
