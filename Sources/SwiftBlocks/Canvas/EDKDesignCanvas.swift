@@ -156,6 +156,7 @@ public struct EDKCompactComponentPalette: View {
                     )
                     .draggable(item)
                     .accessibilityLabel("Add \(item.kind.paletteTitle)")
+                    .accessibilityHint("Drag to canvas to place component")
                 }
             }
             .padding(.horizontal, theme.spacing.sm)
@@ -196,6 +197,7 @@ public struct EDKComponentPalette: View {
                     )
                     .draggable(item)
                     .accessibilityLabel("Add \(item.kind.paletteTitle)")
+                    .accessibilityHint("Drag to canvas to place component")
                 }
             }
             .padding(theme.spacing.sm)

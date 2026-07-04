@@ -51,6 +51,7 @@ public struct SwiftBlocksWorkspaceView: View {
                             .foregroundStyle(selectedTab == tab ? .white : theme.colors.dark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
                 }
             }
             .padding(.horizontal, 12)
